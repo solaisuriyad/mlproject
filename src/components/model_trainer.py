@@ -6,7 +6,7 @@ from catboost import CatBoostRegressor
 from sklearn.ensemble import (
     AdaBoostRegressor,
     GradientBoostingRegressor,
-    RandomForestRegressor
+    RandomForestRegressor,
 )
 
 from sklearn.linear_model import LinearRegression
@@ -43,15 +43,53 @@ class ModelTrainer:
                 "gradient boosting":GradientBoostingRegressor(),
                 "linear regression":LinearRegression(),
                 "K-neighbors classifer":KNeighborsRegressor(),
-                "xgb classifier":XGBRegressor(),
-                "catboosting":CatBoostRegressor(verbose=False),
-                "Adaboost classifier":AdaBoostRegressor()
+                "XGBRegressor":XGBRegressor(),
+                "CatBoosting Regressor":CatBoostRegressor(verbose=False),
+                "AdaBoost Regressor":AdaBoostRegressor(),
 
                 
             }
+            params={
+
+                "decision tree":{
+                    'criterion':['squared_error','friedman_mse','absolute_error','poisson']
+                },
+                
+                "random forest":{
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                "gradient boosting":{
+                    'learning_rate':[.1,.01,.05,.001],
+                    'subsample':[0.6,0.7,0.75,0.8,0.85,0.9],
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                "linear regression":{},
+
+                "K-neighbors classifer":{},
+
+                "XGBRegressor":{
+                    'learning_rate':[.1,.01,.05,.001],
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                "CatBoosting Regressor":{
+                    'depth':[6,8,10],
+                    'learning_rate':[.1,.01,.05,.001],
+                    'iterations':[30,50,100]
+                },
+                "AdaBoost Regressor":{
+                    'learning_rate':[.1,.01,.05,.001],
+                    'n_estimators':[8,16,32,64,128,256]
+                }
+
+            }
+           
 
             model_report:dict=evaluate_models(X_train=X_train,y_train=y_train,X_test=X_test,y_test=y_test,
-                                             models=models)
+                                             models=models,param=params)
+
+
+
+
 
             best_model_score = max(sorted(model_report.values()))
 
@@ -73,7 +111,10 @@ class ModelTrainer:
 
             r2_square =r2_score (y_test, predicted)
             return r2_square
+        
+
 
 
         except Exception as e:
             raise CustomException(e, sys)
+        
